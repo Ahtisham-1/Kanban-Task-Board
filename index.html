@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kanban Task Board</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>Kanban Task Board</h1>
+
+    <dialog id="myDialog">
+      <label for="text">Add Todo</label>
+      <br />
+      <input
+        type="text"
+        id="myInput"
+        name="text"
+        placeholder="Enter your Todo Title"
+      />
+      <br />
+      <textarea
+        name="textarea"
+        id="myDescriptionInput"
+        placeholder="Description"
+      ></textarea>
+      <br />
+      <label for="priority">Choose Priority</label>
+      <br />
+      <select id="myPriority" name="priority">
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+      </select>
+      <br />
+      <input type="date" id="myDate" />
+      <br />
+      <button id="closeButton">Close</button>
+      <button id="saveButton">Save</button>
+    </dialog>
+    <div class="todoInputElements">
+      <!-- <input type="text" id="myInput" placeholder="Write Your Todo..." /> -->
+      <button id="addTodoButton">Create Task</button>
+    </div>
+    <main>
+      <section class="section-Todo">
+        <h2>Todo</h2>
+
+        <div id="todoDiv" class="board-column"></div>
+      </section>
+
+      <section class="section-Progress">
+        <h2>In Progress</h2>
+        <div id="inProgressDiv" class="board-column"></div>
+      </section>
+
+      <section class="section-Done">
+        <h2>Done</h2>
+        <div id="doneDiv" class="board-column"></div>
+      </section>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>

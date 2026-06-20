@@ -1,0 +1,1 @@
+A Trello-inspired task management board where users can create task cards with titles, descriptions, priority tags, and due dates. Cards can be dragged between three columns (To Do, In Progress, Done) using the native HTML Drag and Drop API. Board state is saved to localStorage so tasks persist across browser sessions.
