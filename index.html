@@ -10,33 +10,33 @@
     <h1>Kanban Task Board</h1>
 
     <dialog id="myDialog">
-      <label for="text">Add Todo</label>
-      <br />
+      <label for="text">Add Todo Title</label>
+
       <input
         type="text"
         id="myInput"
         name="text"
         placeholder="Enter your Todo Title"
       />
-      <br />
       <textarea
         name="textarea"
         id="myDescriptionInput"
         placeholder="Description"
       ></textarea>
-      <br />
+
       <label for="priority">Choose Priority</label>
-      <br />
+
       <select id="myPriority" name="priority">
         <option value="low">Low</option>
         <option value="medium">Medium</option>
         <option value="high">High</option>
       </select>
-      <br />
+
       <input type="date" id="myDate" />
-      <br />
-      <button id="closeButton">Close</button>
-      <button id="saveButton">Save</button>
+      <div class="modal-buttons">
+        <button id="closeButton">Close</button>
+        <button id="saveButton">Save</button>
+      </div>
     </dialog>
     <div class="todoInputElements">
       <!-- <input type="text" id="myInput" placeholder="Write Your Todo..." /> -->
