@@ -1,198 +1,191 @@
 // =========================================================================
-// 🚀 KANBAN BOARD JAVASCRIPT: LINE-BY-LINE EXPLANATION
+// 🚀 KANBAN BOARD JAVASCRIPT: LOGICAL STEP-BY-STEP FLOW (FULL COMMENTS)
 // =========================================================================
 
-// --- SECTION 1: GRABBING ELEMENTS FROM HTML ---
+// ==========================================
+// 🔗 STEP 1: GRAB HOOKS FROM HTML
+// ==========================================
 // We find our HTML tags on the page by their IDs and save them as JavaScript variables.
 // These variables act as handles so JS can listen to clicks or edit the page later.
 
-// Find the "Create Task" button at the top of the page.
+// Find the "Create Task" button on the screen and store it
 const addTodoButton = document.getElementById("addTodoButton");
 
-// Find the empty Todo column div. This connects to targets where cards will land.
+// Find the three column containers where the task cards will live
 const todoDiv = document.getElementById("todoDiv");
-
-// Find the empty In Progress column div.
 const inProgressDiv = document.getElementById("inProgressDiv");
-
-// Find the empty Done column div.
 const doneDiv = document.getElementById("doneDiv");
 
-// Find the modal box. We call .showModal() or .close() on this variable to toggle the pop-up.
+// Find the pop-up modal dialog element
 const myDialog = document.getElementById("myDialog");
 
-// Find the text input box where the user types the task title.
+// Find the input boxes inside the pop-up modal
 const myInput = document.getElementById("myInput");
-
-// Find the textarea box where the user types the task description.
 const myDescriptionInput = document.getElementById("myDescriptionInput");
-
-// Find the dropdown select box where the user picks Low, Medium, or High priority.
 const myPriority = document.getElementById("myPriority");
-
-// Find the date input box where the user picks a due date.
 const myDate = document.getElementById("myDate");
 
-// Find the "Save" button inside the modal. When clicked, it reads the inputs above.
+// Find the Save and Close buttons inside the pop-up modal
 const saveButton = document.getElementById("saveButton");
-
-// Find the "Close" button inside the modal. When clicked, it hides the modal.
 const closeButton = document.getElementById("closeButton");
 
-// --- SECTION 2: SETTING UP DATA STORAGE (THE MASTER LEDGER) ---
+// ==========================================
+// 📊 STEP 2: DEFINE THE DATA LEDGER (STATE)
+// ==========================================
 // This is the most important part: the "State". We don't want tasks to disappear on refresh,
 // so we load them from the browser's disk (localStorage) right when the page opens.
 
-// Look inside the browser storage for a key named "todoTasks".
-// - JSON.parse() converts the saved text string back into a real JavaScript list of objects.
-// - If nothing is saved (first time using the app), the "|| []" defaults it to a blank list so it doesn't crash.
+// Load saved tasks from the browser's storage. If nothing is saved yet, start with a blank list []
 let tasks = JSON.parse(localStorage.getItem("todoTasks")) || [];
 
-// --- SECTION 3: POP-UP MODAL CONTROLLER ---
-// Simple listeners to open and close the modal.
+// ==========================================
+// 🛠️ STEP 3: REUSABLE HELPER FUNCTIONS
+// ==========================================
+// Third, we write the helper tools that our app will use over and over again.
 
-// Watch the "Close" button inside the modal. When clicked, run myDialog.close() to hide the pop-up.
-closeButton.addEventListener("click", function () {
-  myDialog.close();
-});
+// --- Helper A: Save tasks to the browser's storage ---
+// A reusable function to save our master tasks list array to browser storage
+function saveTasks() {
+  // Convert our tasks array into a plain string and save it under the key "todoTasks"
+  localStorage.setItem("todoTasks", JSON.stringify(tasks));
+}
 
-// Watch the "Create Task" button on the main page. When clicked, open the modal as a focused pop-up.
-addTodoButton.addEventListener("click", function () {
-  myDialog.showModal();
-});
-
-// --- SECTION 4: THE CARD FACTORY (THE PRINTER) ---
-// This function is like a template. It receives a single task data object (e.g. {title: "Buy Milk", ...}),
-// builds the HTML card elements step-by-step, and puts it in the correct column on the screen.
+// --- Helper B: The Card Factory (The Printer) ---
+// A template function that takes a task data object and draws the physical card on the screen
 // By using this function, we can draw cards both when we click "Save" AND when the page loads.
-
 function createCards(task) {
-  // 1. Create a blank <div> in JavaScript to act as the task card container.
+  // Create a new blank <div> container to act as the task card
   const parentDiv = document.createElement("div");
-
-  // 2. Set the card's ID to the unique ID of our task (e.g. task-17189000). This connects the DOM card to our data array!
+  // Set the card's HTML id attribute to its saved unique ID
   parentDiv.id = task.id;
-
-  // 3. Set the HTML attribute 'draggable' to true. This tells the browser: "The user is allowed to drag this div."
+  // Tell the browser this card is allowed to be dragged
   parentDiv.draggable = "true";
 
-  // 4. Create an empty <h3> element to act as the heading.
+  // Create an <h3> heading element for the task title
   const childTitle = document.createElement("h3");
-  // 5. Read the title from the task object (task.title) and set it as the text inside our new heading.
+  // Put the task's title text inside the heading element
   childTitle.textContent = task.title;
-  // 6. Put the <h3> heading inside our task card container (parentDiv).
+  // Put the heading inside the task card container
   parentDiv.appendChild(childTitle);
 
-  // 7. Create an empty <p> element to hold the task description.
+  // Create a <p> paragraph element for the description
   const childDescription = document.createElement("p");
-  // 8. Read the description from the task object (task.description) and put it inside the paragraph.
+  // Put the task's description text inside the paragraph
   childDescription.textContent = task.description;
-  // 9. Put the paragraph inside our task card container.
+  // Put the paragraph inside the task card container
   parentDiv.appendChild(childDescription);
 
-  // 10. Create an empty <span> element to act as the priority tag.
+  // Create a <span> tag to act as the priority badge
   const childPriority = document.createElement("span");
-  // 11. Read the priority text (low, medium, high) from the task object and set it inside the span.
+  // Put the priority level text (low, medium, high) inside the badge
   childPriority.textContent = task.priority;
-  // 12. Put the span badge inside our task card container.
+  // Put the badge inside the task card container
   parentDiv.appendChild(childPriority);
 
-  // 13. Color-coding: Check the task's priority level and set the background color using our CSS variables.
-  // This connects the task's data to its visual priority color.
+  // If the priority is "high", color the badge background red
   if (task.priority === "high") {
-    childPriority.style.backgroundColor = "var(--danger-accent)"; // Set to red if priority is high
+    childPriority.style.backgroundColor = "var(--danger-accent)";
+    // If the priority is "medium", color the badge background yellow
   } else if (task.priority === "medium") {
-    childPriority.style.backgroundColor = "var(--primary-accent)"; // Set to yellow if priority is medium
+    childPriority.style.backgroundColor = "var(--primary-accent)";
+    // If the priority is "low", color the badge background green
   } else {
-    childPriority.style.backgroundColor = "var(--secondary-accent)"; // Set to green if priority is low
+    childPriority.style.backgroundColor = "var(--secondary-accent)";
   }
 
-  // 14. Create an empty <p> element to hold the due date.
+  // Create a <p> paragraph element to hold the due date
   const childDate = document.createElement("p");
-  // 15. Read the date from the task object (task.date) and put it inside the paragraph.
+  // Put the saved date string inside the paragraph
   childDate.textContent = task.date;
-  // 16. Put the date paragraph inside our task card container.
+  // Put the date paragraph inside the task card container
   parentDiv.appendChild(childDate);
 
-  // 17. Create an empty <button> element to act as the delete button.
+  // Create a <button> element to act as the delete button
   const deleteButton = document.createElement("button");
-  // 18. Put the text "Delete" inside the button.
+  // Put the text "Delete" inside the button
   deleteButton.textContent = "Delete";
-  // 19. Add the class name "delete-btn" to the button. This connects to our Event Delegation listener at the bottom!
   deleteButton.classList.add("delete-btn");
-  // 20. Put the delete button inside our task card container.
+  // Put the delete button inside the task card container
   parentDiv.appendChild(deleteButton);
 
-  // 21. Find the correct column (Todo, Progress, or Done) by searching the page for the saved column ID (task.column).
+  // Find the correct column (Todo, Progress, or Done) using the saved column name
   const targetColumn = document.getElementById(task.column);
-  // 22. Append (insert) the finished card div inside that specific column so the user can see it.
+  // Put the finished task card inside that column
   targetColumn.appendChild(parentDiv);
 
-  // 23. Add a listener to watch when the user starts dragging this card.
+  // When the user starts dragging this card, run this code:
   parentDiv.addEventListener("dragstart", (e) => {
-    // Pack the card's unique ID into the drag-and-drop transfer object under the label "todoElement".
-    // This connects the card being dragged to the drop event listener later!
+    // Pack the card's ID into the drag-and-drop transfer object
     e.dataTransfer.setData("todoElement", parentDiv.id);
   });
 }
 
-// --- SECTION 5: SAVING A NEW TASK ---
+// ==========================================
+// 🔄 STEP 4: STARTUP (DRAW SAVED CARDS)
+// ==========================================
+// Fourth, right when the page loads, we run this loop to draw any
+// saved tasks from Step 2 using the Factory in Step 3.
 
-// Watch the "Save" button inside the modal. When clicked, run this code to bundle the inputs and save.
+// Loop through each task object we loaded from localStorage and hand it to the factory to draw it
+tasks.forEach((taskCards) => {
+  createCards(taskCards);
+});
+
+// ==========================================
+// 🖱️ STEP 5: USER ACTIONS (EVENT LISTENERS)
+// ==========================================
+// Finally, we set up all our watchers (event listeners) to wait for
+// the user to click, type, drag, or drop things.
+
+// --- Action A: Open the Modal Dialog ---
+// When the user clicks the "Create Task" button on the main page, pop up the modal dialog
+addTodoButton.addEventListener("click", function () {
+  myDialog.showModal();
+});
+
+// --- Action B: Close the Modal Dialog ---
+// When the user clicks the "Close" button inside the modal, hide the modal dialog
+closeButton.addEventListener("click", function () {
+  myDialog.close();
+});
+
+// --- Action C: Click "Save" to Create a Task ---
+// When the user clicks the "Save" button inside the modal, run this code:
 saveButton.addEventListener("click", function () {
-  // 1. Read the title input, trim any empty spaces, and check if it is blank.
+  // If the title input is empty or only has spaces, do nothing and exit early
   if (myInput.value.trim() === "") {
-    // 2. If it is blank, log a warning and stop the function immediately (exit early).
     console.log("Invalid Task!");
     return;
   } else {
-    // 3. Create a clean JavaScript object to hold all the user's inputs. This is our task's data structure.
+    // Bundle all the modal form details into a single JavaScript object
     const taskObject = {
-      // Create a unique ID using the prefix "task-" and the current millisecond time.
-      id: "task-" + Date.now(),
-      title: myInput.value, // Read the text typed in the title box.
-      description: myDescriptionInput.value, // Read the text typed in the description box.
-      priority: myPriority.value, // Read the selected priority from the dropdown.
-      date: myDate.value, // Read the selected date.
-      column: "todoDiv", // New tasks always start in the "Todo" column by default.
+      id: "task-" + Date.now(), // Generate a unique ID using the current millisecond time
+      title: myInput.value, // Get the title from the input box
+      description: myDescriptionInput.value, // Get the description
+      priority: myPriority.value, // Get the priority from the dropdown
+      date: myDate.value, // Get the due date
+      column: "todoDiv", // Set the starting column to "Todo" by default
     };
 
-    // 4. Push (add) our new task data object to our global master tasks array.
+    // Add the new task object to our master tasks list array
     tasks.push(taskObject);
-    // 5. Save the updated tasks array to the browser storage.
+    // Save the updated master list to browser storage
     saveTasks();
-    // 6. Call the factory function (createCards) and pass our taskObject to draw the card on the screen.
+    // Call the factory function to build and draw the card on the screen
     createCards(taskObject);
 
-    // 7. Clear all the input fields in the modal so they are empty for the next task creation.
+    // Reset all the modal form inputs to blank so they are ready for the next task
     myInput.value = "";
     myDescriptionInput.value = "";
     myPriority.value = "";
     myDate.value = "";
 
-    // 8. Close the modal dialog pop-up.
+    // Close the modal dialog
     myDialog.close();
   }
 });
 
-// --- SECTION 6: LOCALSTORAGE PERSISTENCE HELPER ---
-
-// A reusable function to save our master tasks list to browser storage.
-function saveTasks() {
-  // Convert our JavaScript array of objects into a single text string using JSON.stringify,
-  // and store it under the key name "todoTasks" inside the browser's localStorage.
-  localStorage.setItem("todoTasks", JSON.stringify(tasks));
-}
-
-// --- SECTION 7: LOAD ON INITIAL PAGE LOAD ---
-
-// When the page first opens, loop through each task object we loaded from localStorage
-// and call our createCards factory function to draw them. This is what prevents tasks from disappearing!
-tasks.forEach((taskCards) => {
-  createCards(taskCards);
-});
-
-// --- SECTION 8: EVENT DELEGATION (DELETIONS) ---
+// --- Action D: Click "Delete" on any Card (Event Delegation) ---
 // Instead of adding a listener to every card's delete button, we add one listener to the columns.
 // This is more efficient and automatically works for any new cards added in the future!
 
@@ -214,34 +207,31 @@ document.querySelectorAll(".board-column").forEach((parentElement) => {
   });
 });
 
-// --- SECTION 9: DRAG AND DROP COLUMNS API ---
-// Loops through the columns and configures them as drop targets.
-
-// Find all column elements and loop through them.
+// --- Action E: Drag and Drop Cards between Columns ---
+// Find all elements with the class "board-column" and loop over them
 document.querySelectorAll(".board-column").forEach((item) => {
-  // While a card is hovering above a column, run this repeatedly:
+  // While an item is being dragged over a column, run this repeatedly:
   item.addEventListener("dragover", (e) => {
-    // Hold the door open (override the browser's default behavior which blocks dropping).
+    // Hold the door open (override browser's default behavior that rejects drops)
     e.preventDefault();
   });
 
-  // When the card is released (dropped) inside a column, run this:
+  // When the dragged card is released (dropped) inside a column, run this:
   item.addEventListener("drop", (e) => {
     // Prevent browser default actions
     e.preventDefault();
-    // Retrieve the unique ID of the card that was dragged (packed in Section 4).
+    // Grab the ID of the card that was dragged
     const elementId = e.dataTransfer.getData("todoElement");
-    // Find the physical HTML card on the screen using its ID.
+    // Find the physical HTML card on the screen using its ID
     const draggedCard = document.getElementById(elementId);
-    // Physically move the card inside this column container (item) visually.
+    // Move the card inside this column visually
     item.appendChild(draggedCard);
 
-    // Find the task object inside our master tasks array in memory that matches the card's ID.
+    // Find the task object inside our master memory array that matches the dragged card's ID
     const updatedTasks = tasks.find((taskItem) => taskItem.id === elementId);
-    // Update the task's column property to match the new column's ID (item.id).
-    // This connects the physical screen drag to our permanent data record!
+    // Update the task's column property in memory to match the new column's ID (item.id)
     updatedTasks.column = item.id;
-    // Save the updated list to localStorage so the move survives a page refresh.
+    // Save the updated master list to storage so the move is remembered
     saveTasks();
   });
 });
